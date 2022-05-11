@@ -4,6 +4,8 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { Evento } from '@app/models/Evento';
 import { EventoService } from '@app/services/evento.service';
+import { DatePipe } from '@angular/common';
+import { Constants } from '@app/util/constants';
 
 @Component({
   selector: 'app-evento-lista',
@@ -16,6 +18,7 @@ export class EventoListaComponent implements OnInit {
 
   public eventos: Evento[] = [];
   public eventosFiltrados: Evento[] = [];
+  public eventoId = 0;
 
   public widthImg = 150;
   public marginImg = 2;
@@ -76,17 +79,43 @@ export class EventoListaComponent implements OnInit {
     // )
   }
 
-  openModal(template: TemplateRef<any>): void {
+  openModal(template: TemplateRef<any>, eventoId: number): void {
+    this.eventoId = eventoId;
     this.modalRef = this.modalService.show(template, {class: 'modal-sm'});
   }
 
   confirm(): void {
     this.modalRef.hide();
-    this.toastr.success('O evento foi deletado com sucesso!', 'Deletado');
+    this.spinner.show();
+
+    this.eventoService.deleteEvento(this.eventoId).subscribe({
+      next: (result: any) => {
+        if(result.message === 'Deletado'){
+          this.toastr.success('O evento foi deletado com sucesso.', 'Deletado');
+          this.spinner.hide();
+          this.getEventos();
+        }
+      },
+      error: (error: any) => {
+        console.error(error);
+        this.toastr.error(`Erro ao tentar deletar o evento ${this.eventoId}`, 'Erro');
+        this.spinner.hide();
+      },
+      complete: () => this.spinner.hide()
+    });
   }
 
   decline(): void {
     this.modalRef.hide();
+  }
+
+  formatDate(campoData: any) {
+    let arrData = campoData.split('/');
+    let stringFormatada = arrData[1] + '-' + arrData[0] + '-' +arrData[2];
+
+    const datepipe: DatePipe = new DatePipe('en-US')
+    let formattedDate = datepipe.transform(stringFormatada, Constants.DATE_TIME_FMT);
+    return formattedDate;
   }
 
 }
