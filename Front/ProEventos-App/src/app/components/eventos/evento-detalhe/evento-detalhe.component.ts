@@ -11,6 +11,9 @@ import { Lote } from '@app/models/Lote';
 import { EventoService } from '@app/services/evento.service';
 import { LoteService } from '@app/services/lote.service';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import { environment } from '@environments/environment';
+import { DatePipe } from '@angular/common';
+import { Constants } from '@app/util/constants';
 
 @Component({
   selector: 'app-evento-detalhe',
@@ -24,6 +27,8 @@ export class EventoDetalheComponent implements OnInit {
   form!: FormGroup;
   estadoSalvar = 'post';
   loteAtual = {id: 0, nome: '', indice: 0}
+  imagemURL = 'assets/img/upload.png';
+  file: File;
 
   get modoEditar(): boolean {
     return this.estadoSalvar === 'put';
@@ -80,6 +85,11 @@ export class EventoDetalheComponent implements OnInit {
         next: (evento: Evento) => {
           this.evento = {... evento};
           this.form.patchValue(this.evento);
+
+          if(this.evento.imagemURL != ''){
+            this.imagemURL = environment.apiUrl + 'resources/images/' + this.evento.imagemURL;
+          }
+
           this.evento.lotes.forEach(lote => {
             this.lotes.push(this.criarLote(lote));
           })
@@ -107,7 +117,7 @@ export class EventoDetalheComponent implements OnInit {
       qtdPessoas: ['', [Validators.required, Validators.max(120000)]],
       telefone: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      imagemURL: ['', Validators.required],
+      imagemURL: [''],
       lotes: this.fb.array([])
     });
   }
@@ -195,7 +205,7 @@ export class EventoDetalheComponent implements OnInit {
     console.log(this.eventoId);
     this.loteService.deleteLote(this.eventoId, this.loteAtual.id).subscribe({
       next: () => {
-        this.toastr.success('Lotes deletado com sucesso!', 'Sucesso')
+        this.toastr.success('Lotes deletado com sucesso!', 'Sucesso');
         this.lotes.removeAt(this.loteAtual.indice);
       },
       error: (error: any) => {
@@ -206,8 +216,36 @@ export class EventoDetalheComponent implements OnInit {
       complete: () => this.spinner.hide()
     });
   }
+
   public declineDeleteLote(): void{
     this.modalRef.hide();
+  }
+
+  public onFileChange(ev: any): void{
+    const reader = new FileReader();
+
+    reader.onload = (event: any) => this.imagemURL = event.target.result;
+
+    this.file = ev.target.files;
+    reader.readAsDataURL(this.file[0]);
+
+    this.uploadImagem();
+  }
+
+  public uploadImagem(): void {
+    this.spinner.show();
+    this.eventoService.postUpload(this.eventoId, this.file).subscribe({
+      next: () => {
+        this.carregarEvento();
+        this.toastr.success('Imagem atualizada com sucesso!', 'Sucesso');
+      },
+      error: (error: any) => {
+        console.error(error);
+        this.spinner.hide();
+        this.toastr.error('Erro ao fazer upload do arquivo!', 'Erro');
+      },
+      complete: () => this.spinner.hide()
+    });
   }
 
 }

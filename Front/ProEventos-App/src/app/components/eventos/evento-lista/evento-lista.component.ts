@@ -6,6 +6,7 @@ import { Evento } from '@app/models/Evento';
 import { EventoService } from '@app/services/evento.service';
 import { DatePipe } from '@angular/common';
 import { Constants } from '@app/util/constants';
+import { environment } from '@environments/environment';
 
 @Component({
   selector: 'app-evento-lista',
@@ -56,6 +57,10 @@ export class EventoListaComponent implements OnInit {
 
   public hideImg(): void{
     this.showImg = !this.showImg;
+  }
+
+  public mostraImagem(imagemURL: string): string{
+    return (imagemURL != '') ? `${environment.apiUrl}resources/images/${imagemURL}` : 'assets/img/semImagem.png';
   }
 
   public getEventos(): void {
