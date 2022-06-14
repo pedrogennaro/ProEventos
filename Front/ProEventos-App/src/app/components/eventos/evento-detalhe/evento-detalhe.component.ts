@@ -236,7 +236,8 @@ export class EventoDetalheComponent implements OnInit {
     this.spinner.show();
     this.eventoService.postUpload(this.eventoId, this.file).subscribe({
       next: () => {
-        this.carregarEvento();
+        //this.carregarEvento();
+        this.router.navigate([`eventos/detalhe/${this.eventoId}`]);
         this.toastr.success('Imagem atualizada com sucesso!', 'Sucesso');
       },
       error: (error: any) => {
