@@ -6,7 +6,7 @@
         <div class="input-group-prepend">
           <div class="input-group-text">Filtro:</div>
         </div>
-        <input type="text" class="form-control mr-2" placeholder="Buscar por Tema e Local" [(ngModel)]="filtroLista">
+        <input type="text" class="form-control mr-2" placeholder="Buscar por Tema e Local" (input)="filtrarEventos($event.target)">>
       </div>
     </div>
     <div>
@@ -37,7 +37,7 @@
       </tr>
     </thead>
     <tbody *ngIf="eventos && eventos.length">
-      <tr *ngFor="let evento of eventosFiltrados">
+      <tr *ngFor="let evento of eventos">
         <td class="d-none d-md-table-cell">
           <img [collapse]="!showImg" [isAnimated]="true" [src]="mostraImagem(evento.imagemURL)" alt="" [style.width.px]="widthImg" [style.margin.px]="marginImg">
         </td>
@@ -61,6 +61,23 @@
       </tr>
     </tfoot>
   </table>
+
+  <div class="d-flex justify-content-center">
+    <pagination [boundaryLinks]="true"
+
+                [totalItems]="pagination.totalItems"
+                [itemsPerPage]="pagination.itemsPerPage"
+                [(ngModel)]="pagination.currentPage"
+                (pageChanged)="pageChanged($event)"
+
+                pageBtnClass="btn"
+                previousText="&lsaquo;"
+                nextText="&rsaquo;"
+                firstText="&laquo;"
+                lastText="&raquo;"
+        >
+    </pagination>
+  </div>
 
 </div>
 

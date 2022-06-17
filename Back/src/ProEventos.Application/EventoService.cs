@@ -5,6 +5,7 @@ using ProEventos.Application.Contratos;
 using ProEventos.Application.Dtos;
 using ProEventos.Domain;
 using ProEventos.Persistence.Contratos;
+using ProEventos.Persistence.Pagination;
 
 namespace ProEventos.Application
 {
@@ -82,14 +83,19 @@ namespace ProEventos.Application
             }
         }
 
-        public async Task<EventoDto[]> GetAllEventosAsync(int userId, bool includePalestrantes = false)
+        public async Task<PageList<EventoDto>> GetAllEventosAsync(int userId, PageParams pageParams, bool includePalestrantes = false)
         {
             try
             {
-                var eventos = await _eventoPersistence.GetAllEventosAsync(userId, includePalestrantes);
+                var eventos = await _eventoPersistence.GetAllEventosAsync(userId, pageParams, includePalestrantes);
                 if(eventos == null) return null;
 
-                var result = _mapper.Map<EventoDto[]>(eventos);
+                var result = _mapper.Map<PageList<EventoDto>>(eventos);
+
+                result.CurrentPage = eventos.CurrentPage;
+                result.TotalPages = eventos.TotalPages;
+                result.PageSize = eventos.PageSize;
+                result.TotalCount = eventos.TotalCount;
 
                 return result;
             }
@@ -99,22 +105,24 @@ namespace ProEventos.Application
             }
         }
 
-        public async Task<EventoDto[]> GetAllEventosByTemaAsync(int userId, string tema, bool includePalestrantes = false)
-        {
-            try
-            {
-                var eventos = await _eventoPersistence.GetAllEventosByTemaAsync(userId, tema, includePalestrantes);
-                if(eventos == null) return null;
+        // Método SEM PAGINAÇÃO
 
-                var result = _mapper.Map<EventoDto[]>(eventos);
+        // public async Task<EventoDto[]> GetAllEventosByTemaAsync(int userId, string tema, bool includePalestrantes = false)
+        // {
+        //     try
+        //     {
+        //         var eventos = await _eventoPersistence.GetAllEventosByTemaAsync(userId, tema, includePalestrantes);
+        //         if(eventos == null) return null;
 
-                return result;
-            }
-            catch (Exception e)
-            {
-                throw new Exception(e.Message);
-            }
-        }
+        //         var result = _mapper.Map<EventoDto[]>(eventos);
+
+        //         return result;
+        //     }
+        //     catch (Exception e)
+        //     {
+        //         throw new Exception(e.Message);
+        //     }
+        // }
 
         public async Task<EventoDto> GetEventoByIdAsync(int userId, int eventoId, bool includePalestrantes = false)
         {
