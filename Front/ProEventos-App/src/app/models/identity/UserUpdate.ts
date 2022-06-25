@@ -7,6 +7,7 @@ export class UserUpdate {
   phoneNumber: string;
   funcao: string;
   descricao: string;
+  imagemURL: string;
   password: string;
   token: string;
 }

@@ -54,6 +54,14 @@ constructor(private http: HttpClient) { }
     );
   }
 
+  postUpload(file: File): Observable<UserUpdate>{
+    const fileToUpload = file[0] as File;
+    const formData = new FormData();
+    formData.append('file', fileToUpload);
+
+    return this.http.post<UserUpdate>(this.baseUrl + 'upload', formData).pipe(take(1));
+  }
+
   public logout(): void{
     localStorage.removeItem('user');
     this.currentUserSearch.next(null);

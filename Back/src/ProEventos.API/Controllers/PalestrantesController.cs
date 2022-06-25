@@ -31,8 +31,8 @@ namespace ProEventos.API.Controllers
             _accountService = accountService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Get([FromQuery]PageParams pageParams)
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAll([FromQuery]PageParams pageParams)
         {
             try
             {
@@ -50,8 +50,8 @@ namespace ProEventos.API.Controllers
             }
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        [HttpGet]
+        public async Task<IActionResult> Get()
         {
             try
             {
@@ -83,8 +83,8 @@ namespace ProEventos.API.Controllers
             }
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, PalestranteUpdateDto model)
+        [HttpPut]
+        public async Task<IActionResult> Put(PalestranteUpdateDto model)
         {
             try
             {

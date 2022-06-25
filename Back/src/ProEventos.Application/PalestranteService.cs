@@ -91,10 +91,10 @@ namespace ProEventos.Application
         {
             try
             {
-                var evento = await _palestrantePersistence.GetPalestranteByUserIdAsync(userId, includeEventos);
-                if(evento == null) return null;
+                var palestrante = await _palestrantePersistence.GetPalestranteByUserIdAsync(userId, includeEventos);
+                if(palestrante == null) return null;
 
-                var result = _mapper.Map<PalestranteDto>(evento);
+                var result = _mapper.Map<PalestranteDto>(palestrante);
 
                 return result;
             }
